@@ -1,6 +1,6 @@
 # Kitchen Chaos Tycoon — 로드맵
 
-> 최종 업데이트: 2026-04-29 (Phase 93 완료)
+> 최종 업데이트: 2026-04-30 (Phase 96 완료)
 
 ---
 
@@ -106,6 +106,9 @@
 | Phase 90 | 플레이테스트 이슈 20건 수정 (P0 4건: 탭 depth/버튼 차단/시즌패스 undefined/재료0 방어, P1 7건: 에너지 HUD/대화 지연/아이콘/도구 이모지/미션 안내/판매 색상/업그레이드 버튼, P2 9건: 화살표/업적 아이콘/텍스트 wrap/카드 패딩/노드 라벨/레시피 아이콘/배경 stub/시즌패스 바로가기/재클리어 문구) | ✅ |
 | Phase 91 | UI 과밀/침범 이슈 7건 수정 (ResultScene 스테이지명 중복·섹션 여백, MerchantScene 헤더 겹침·분기 카드 overflow, ChefSelectScene 버튼 겹침, MenuScene 탭 레이블 잘림·배너 겹침) | ✅ |
 | Phase 93 | 전체 씬 버튼 인터랙션 전수 감사 (hover 누락 / setInteractive 누락 / 클릭 무반응) — 10개 씬 37개소 pointerover/pointerout 추가, 중복 4건 제거 | ✅ |
+| Phase 94 | TavernServiceScene 테마 에셋 + HUD/VFX — g1 바닥/벽 타일 v14 적용, 인내심 게이지 6테이블, 주문 말풍선, 골드 플로팅 VFX, 영업 HUD 바(타이머+골드) | ✅ |
+| Phase 95 | TavernServiceScene 게임 로직 포팅 — 조리 슬롯(D2), 레시피 퀵슬롯(D3), 재고 패널(D4), Image→Sprite 전환(D5), 손님 AI(D6), 인내심 감소(D7), 서빙+골드(D8), 스킬 버튼(D9), 영업 종료(D10), 이벤트(D11), 유랑 미력사(D12) | ✅ |
+| Phase 96 | ServiceScene → TavernServiceScene 마이그레이션 — GatheringScene/EndlessScene 진입점 교체, main.js ServiceScene 제거, ServiceScene.js→_legacy/ 이동, 디버그 가드 추가 | ✅ |
 
 ---
 

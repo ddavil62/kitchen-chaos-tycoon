@@ -33,7 +33,7 @@
 | 월드맵 | WorldMapScene.js | 24챕터 3그룹 탭(1~6/7~15/16~24장), 9노드 3x3 맵, 스테이지 패널, 진행률+에너지 HUD(에너지 0 빨간색), 에너지 게이트 + 충전 모달, 대화 트리거 350ms 지연 |
 | 엔드리스 | EndlessScene.js + EndlessWaveGenerator.js + EndlessMissionManager.js | 무한 웨이브 TD, 5웨이브마다 영업+행상인 삽입, 미력 폭풍 이벤트, 정화 임무 4종, 통계 트래킹(폭풍/임무/무결) |
 | 손님 프로필 | customerProfileData.js | 10종 프로필 정의 (normal/vip/gourmet/rushed/group/critic/regular/student/traveler/business), patienceMult/tipStyle/preferredGenre 속성, getCustomerProfile() 조회 |
-| 영업 코어 | ServiceScene.js | 손님 입장/주문/조리/서빙/팁, 골드→영구 저장, 재료 0개 진입 즉시 종료 방어, 아이소메트릭 홀 (3레이어 분리 렌더링+depth sorting+홀 데코), 챕터별 홀 배경 (바닥 8종 tileSprite+뒷벽 8종), 엔드리스 웨이브 구간별 배경 테마 전환, 웜 다크 통합 팔레트, 픽셀아트 렌더링 (fallback 지원), 10종 프로필 기반 손님 스폰/평론가 점수 집계/단골 추적, 서빙 2단계 인터랙션, 레시피 재료 아이콘 12px+축약 |
+| 영업 코어 | TavernServiceScene.js | Travellers Rest 스타일 탑다운 레이아웃 영업씬. 손님 입장/주문/조리/서빙/팁, 골드→영구 저장, 재료 0개 진입 즉시 종료 방어, v14 바닥/벽 타일+v13 가구 6테이블 24석, 32x48 Sprite 캐릭터 walk 애니메이션, 인내심 게이지/주문 말풍선/골드 플로팅 VFX, 조리 슬롯 2개, 레시피 퀵슬롯+스킬 버튼, 10종 프로필 손님 AI, 영업 이벤트 4종, 유랑 미력사 패시브. 레거시 ServiceScene.js는 `_legacy/`에 보관 |
 | 결과 | ResultScene.js | 캠페인 별점/엔드리스 기록 표시, 행상인 방문 연결, modal lock (DialogueScene 시 alpha=0.3+disableInteractive, 종료 시 복원), isCleared 복합 조건, 셰프별 장보기 실패 대사 (7셰프 x 3 바리에이션), BTN_W=240, partialFail 별점 2개 캡+오렌지 메시지, AD-1 광고 재도전(완전/부분 실패)+AD-3 보상 2배(stars<=2) 버튼, btnGap 조건부 축소(44/54), 재클리어 시 회색 이탤릭 안내 문구, 이벤트 보너스 골드 조건부 표시, 스테이지 클리어 시즌 XP 훅, stageId/nameKo 중복 방지 포맷, 섹션 여백 압축(~30px 절약) |
 | 대화 시스템 | DialogueManager.js + DialogueScene.js + dialogueData.js | 대화 스크립트 119종 재생, 선택지 분기 UI, 픽셀아트 초상화 렌더링, 시청 기록 |
 | 스토리 시스템 | StoryManager.js + storyData.js | 트리거 중앙 디스패처(triggerPoint 8종), 120항목, 챕터 진행도, 스토리 플래그(객체), onComplete 콜백, 씬 1줄 호출 |
@@ -58,8 +58,8 @@
 ### 게임 루프
 
 ```
-메뉴 → 월드맵 → 셰프 선택 → GatheringScene(재료 채집) → ServiceScene(영업) → ResultScene → MerchantScene(행상인) → 월드맵
-메뉴 → 월드맵 → 엔드리스 → 셰프 선택 → EndlessScene(TD) ↔ ServiceScene(영업) → MerchantScene(행상인) → EndlessScene(계속) → ... → ResultScene(게임오버)
+메뉴 → 월드맵 → 셰프 선택 → GatheringScene(재료 채집) → TavernServiceScene(영업) → ResultScene → MerchantScene(행상인) → 월드맵
+메뉴 → 월드맵 → 엔드리스 → 셰프 선택 → EndlessScene(TD) ↔ TavernServiceScene(영업) → MerchantScene(행상인) → EndlessScene(계속) → ... → ResultScene(게임오버)
 ```
 
 ## 기능 목록
@@ -67,12 +67,12 @@
 | 기능 | 설명 | 상태 |
 |------|------|------|
 | 코어 TD | 아이소메트릭 그리드, 도구 배치/회수/재배치, 적 AI, 재료 드롭, 배치 가능 셀 하이라이트, 사거리 미리보기, 웨이브 카운트다운 | 완료 |
-| 3단계 루프 | GatheringScene(재료 채집) + ServiceScene(영업) + MerchantScene(행상인) + ResultScene | 완료 |
+| 3단계 루프 | GatheringScene(재료 채집) + TavernServiceScene(영업) + MerchantScene(행상인) + ResultScene | 완료 |
 | 캠페인 | 24챕터 체계(그룹1~3), 보스 13종, 별점 시스템 | 완료 |
 | 레시피 | 284종, 5등급, 도감 | 완료 |
 | 셰프 시스템 | 7종 Named 셰프 (미미/린/메이지/유키/라오/앙드레/아르준), 전원 패시브+액티브 스킬, 챕터 기반 잠금 해제, 가로 캐러셀 UI (260x380px 카드, 스와이프/화살표 전환, 순환 탐색), 미미 스킨 3종(기본/핑크/블루 앞치마) + 스킨 선택 서브 패널 + IAP 구매 스텁 | 완료 |
 | 상점 | 5탭 (업그레이드/레시피/테이블/인테리어/직원), 탭 depth 1020/1021(TutorialManager 위), 업그레이드 버튼 76px | 완료 |
-| 영업 심화 | 테이블 12석(양면 착석), 인테리어, 직원 2종, 10종 프로필 손님(평론가·단골 특수 메커니즘), 이벤트, 서빙 2단계 인터랙션+긴급 피드백+콤보 팝업 | 완료 |
+| 영업 심화 | 탑다운 6테이블 24석(v13 가구), 10종 프로필 손님(평론가·단골 특수 메커니즘), 이벤트 4종, 조리 슬롯 2개+레시피 퀵슬롯+스킬 버튼, 인내심 게이지+말풍선+골드 VFX, 유랑 미력사 패시브 | 완료 |
 | 사운드 | SFX 20종 + BGM 5종, 설정 UI | 완료 |
 | VFX | 파티클, 스크린 효과, 플로팅 텍스트 | 완료 |
 | 엔드리스 모드 | 무한 웨이브 TD, 6-6 클리어로 해금, 데일리 스페셜, 로컬 랭킹, 미력 폭풍의 눈 이벤트(15웨이브 배수), 정화 임무 4종, 유랑 미력사 8% 등장, 웨이브 구간별 배경 테마 전환 | 완료 |
@@ -83,7 +83,7 @@
 | 출시 준비 | 버전 표기(APP_VERSION), 전역 에러 핸들러, localStorage 용량 체크 | 완료 |
 | 도구/행상인/채집 | 영구 도구 8종, 구매/판매/업그레이드, 행상인 UI, 재료 채집 TD, 도구 도감/팝업 | 완료 |
 | 대화/스토리 | 스크립트 119종, 트리거 120항목, 선택지 분기, 초상화 9종, 15캐릭터, 시나리오 일관성 검증+개그씬 확장 완료 | 완료 |
-| 영업 씬 비주얼 | 아이소메트릭 홀 (3레이어 분리 렌더링, 테이블 front/back 10종+손님 10종+챕터별 바닥 8종+뒷벽 8종, 홀 데코, depth 체계 정비), 현대 캐주얼 다이닝 v13 가구(table_4p 100x40, chair_back/front 100x20) + 손님 seated_south/north 20종(64x64px) + 2열x3행 6테이블 24석(front 2+back 2/quad), depth 착석 표현(BENCH_CONFIG: QUAD_W=116, QUAD_H=128, SLOT_DX=24, BACK_SLOT_DY=104) | 완료 |
+| 영업 씬 비주얼 | TavernServiceScene 탑다운 레이아웃: v14 바닥/벽 타일 + v13 가구(테이블+벤치) 2열x3행 6테이블 24석, 32x48 캐릭터 15명(손님 10종+셰프 5명) walk/seated Sprite, Y축 depth sorting, 인내심 게이지(100x8px, 3색 구간), 주문 말풍선, 골드 플로팅 VFX, HUD 바(타이머+만족도+골드) | 완료 |
 | 그룹2 콘텐츠 (7~15장) | 일식/중식/양식 아크, 적 16종+보스 4종, 레시피 80종, 대화 32종, 42스테이지 밸런스 검증 완료 | 완료 |
 | 그룹3 콘텐츠 (16~24장) | 인도(16~18)/멕시칸(19~21)/디저트·최종(22~24) 아크, 적 14종+보스 3종(maharaja/el_diablo_pepper/queen_of_taste 3페이즈), 레시피 57종, 대화 28종, 전 스테이지(16-1~24-6) 구현, 밸런스 QA 완료 | 완료 |
 | 업적 시스템 | 34개 업적 (5카테고리), 조건 판정+보상(골드/코인/정수), 토스트 알림, 전용 AchievementScene UI, 수령 대기 카드 골드 glow + alpha 펄스 | 완료 |
@@ -123,7 +123,7 @@
 ## 알려진 제약사항
 
 - EndlessScene이 WaveManager를 MonkeyPatch로 연동 (공식 override API 없음)
-- 온라인 랭킹 미구현, 엔드리스 ServiceScene은 1장 기준 config
+- 온라인 랭킹 미구현, 엔드리스 TavernServiceScene은 1장 기준 config
 - removeBuff()가 모든 멀티플라이어를 전역 초기화하므로, 디버프 동시 적용 시 먼저 만료된 디버프가 나머지도 해제할 수 있음 (기존 설계, 향후 멀티 버프 스택 구현 시 개선)
 - enemy_charge_impact는 VFX/경고 텍스트만 구현 (Tower HP 시스템 미도입). 타워 내구도 도입 시 별도 페이즈에서 검토
 - 신규 생성 metadata.json 8건(macaron_knight, sugar_specter, sushi_ninja, tempura_monk, queen_of_taste, sake_oni, yuki_chef, lao_chef)의 id 필드가 "unknown". 향후 PixelLab 재생성 시 업데이트 필요
@@ -148,50 +148,48 @@
 - 에너지 카운트다운 타이머는 MenuScene에만 존재, WorldMapScene에서는 현재 에너지 수치만 표시(카운트다운 미표시)
 - MenuScene 배경 이미지 이벤트 분기 코드 구조만 준비됨. `menu_bg_default` 에셋 미존재로 항상 기존 `menu_bg` 폴백. 에셋 추가는 별도 AD Phase 필요
 - ResultScene에 평론가 혹평/단골 달성 알림 텍스트 미구현 (Phase 76 QA MEDIUM 이슈, 패널티 로직 자체는 ServiceScene에서 정상 동작, 플레이어 시각 피드백 부재). 후속 Phase에서 ResultScene UI 보강 시 함께 처리 권장
-- ServiceScene CUSTOMER_PATIENCE_MULT 상수와 customerProfileData.js patienceMult 중복 정의 (현재 값 동기화됨, 향후 통합 권장)
+- TavernServiceScene CUSTOMER_PATIENCE_MULT 상수와 customerProfileData.js patienceMult 중복 정의 (현재 값 동기화됨, 향후 통합 권장)
+- TavernServiceScene 단체 손님(group) 2석 동시 점유 로직 미구현, normal로 대체 처리 (후속 Phase에서 구현 가능)
+- TavernServiceScene window 진단 변수(`__tavernLayout` 등)에 `import.meta.env.DEV` 가드 미적용, 프로덕션에서도 노출 (QA 의존성으로 보류)
+- 주석 12곳에 "ServiceScene" 문자열 잔존 (기능 영향 없음, 후속 정리 권장)
 - MenuScene 이벤트 배너 텍스트에 wordWrap 160px + maxLines 1 적용으로 긴 이벤트 설명이 잘릴 수 있음 (시즌 패스 숏컷과의 X축 겹침 방지 트레이드오프, Phase 91)
 
 ## 향후 계획
 
 로드맵은 [ROADMAP.md](ROADMAP.md) 참조.
 
-### 영업씬 태번(Travellers Rest) 스타일 재설계 (Phase A ~ H 완료)
+### 영업씬 태번(Travellers Rest) 스타일 재설계 (Phase A ~ E 완료, 마이그레이션 완결)
 
-Travellers Rest 식 탑다운 가구 + 사이드뷰 풀바디 캐릭터로 영업씬 전면 재설계. Phase G에서 v13 현대 캐주얼 다이닝 가구로 전면 교체하고, 2열x3행 6테이블 24석 레이아웃으로 확장. Phase H에서 배경 팔레트를 현대 크림/차콜로 교체하고 v14 배경 타일 2종 적용. front=seated_south(정면), back=seated_north(뒷모습) depth 착석 표현.
+Travellers Rest 식 탑다운 가구 + 사이드뷰 풀바디 캐릭터로 영업씬 전면 재설계 완료. TavernServiceScene이 유일한 영업씬으로 전환됨. 레거시 ServiceScene.js는 `js/scenes/_legacy/`에 보관.
 
-- **신규 파일**: `js/scenes/TavernServiceScene.js`, `js/data/tavernLayoutData.js`, `js/data/tavernStateData.js`
-- **실 에셋**: `assets/tavern/` (v14 배경 타일 2종 + v13 가구 3종 + 손님 seated_south/north 20종 + 손님 walk 20종 + 셰프 idle 7 + 셰프 walk 10 + 레거시 가구)
-- **레거시 백업**: `assets/tavern/.legacy-b5/`, `.legacy-b6-2/`, `.legacy-phase-d/`
-- **진입점**: `?scene=tavern` URL 파라미터 (디버그 전용)
-- **현재 레이아웃**: 2열x3행 6테이블 4인석(front 2+back 2) = 24석 (QUAD_W=116, QUAD_H=128)
-- **REAL_KEY_MAP**: v14 배경 타일 2종 + v13 가구 3종 + 손님 seated_south/north 20종 + 셰프 2종 + normal 2종
-- **walk 데모 키**: W(walk_r)/A(walk_l)/S(stop+seated_south or seated_north) 손님, C(walk_r)/V(walk_l) 셰프 mage
-- **Phase B 규격서**: `.claude/specs/2026-04-23-kc-phase-b-asset-spec.md` (V12 규격, B-2 반영)
+- **영업 파일**: `js/scenes/TavernServiceScene.js`, `js/data/tavernLayoutData.js`, `js/data/tavernStateData.js`
+- **실 에셋**: `assets/tavern/` (v14 배경 타일 2종 + v13 가구 3종 + 손님 seated 20종 + 손님 walk 20종 + 셰프 idle 5종 + 셰프 walk 10종)
+- **레거시 백업**: `assets/tavern/.legacy-b5/`, `js/scenes/_legacy/ServiceScene.js`
+- **레이아웃**: 2열x3행 6테이블 4인석(left 2+right 2) = 24석 (QUAD_W=116, QUAD_H=128)
 - **페이즈 마스터 플랜**: [SERVICE_SCENE_TAVERN_PHASES.md](SERVICE_SCENE_TAVERN_PHASES.md)
 - **방향성 문서**: [SERVICE_SCENE_TAVERN_DIRECTION.md](SERVICE_SCENE_TAVERN_DIRECTION.md)
 
 ## 개발 이력 (최근)
 
-### Phase 93 -- 버튼 인터랙션 전수 감사 (2026-04-29)
+### Phase 96 -- ServiceScene → TavernServiceScene 마이그레이션 (2026-04-30)
 
-10개 씬(WorldMapScene, ShopScene, WanderingChefModal, MerchantScene, RecipeCollectionScene, GatheringScene, DialogueScene, ChefSelectScene, MenuScene, TavernServiceScene)에서 setInteractive 오브젝트에 누락된 pointerover/pointerout hover 핸들러 37개소 추가. QA에서 발견된 중복 hover 리스너 4건(ChefSelectScene 리스너 누적, WorldMapScene 엔드리스/adBtnBg 중복, GatheringScene 스킬 버튼 중복) 제거. 세이브 변경 없음(v31).
+GatheringScene/EndlessScene의 영업씬 진입점을 ServiceScene에서 TavernServiceScene으로 교체. main.js에서 ServiceScene import/등록 제거. ServiceScene.js를 `_legacy/`에 이동. `_buildBenchSlots()`에 dev-only 가드 추가. playwright.config.js timeout 30초→60초 상향. 세이브 변경 없음(v31).
 
-- QA: PASS (3차 최종 검증, 이슈 4건 전부 수정 완료)
-- 스펙: `.claude/specs/2026-04-29-kc-phase93-scope.md`
+- QA: PASS (101/101 -- Phase 96 신규 27 + Phase 94 회귀 32 + Phase 95 회귀 42)
+- 스펙: `.claude/specs/2026-04-30-kc-phase96-scope.md`
 
-### Phase 91 -- UI 과밀/침범 이슈 7건 수정 (2026-04-29)
+### Phase 95 -- TavernServiceScene 게임 로직 포팅 (2026-04-30)
 
-ResultScene(스테이지명 중복 표시 수정, 섹션 여백 압축), MerchantScene(골드/탭 헤더 간격 확보, 분기 카드 텍스트 overflow 방지), ChefSelectScene(하단 버튼 3개 겹침 해소), MenuScene(미션 모달 탭 레이블 잘림 수정, 이벤트 배너/시즌 패스 숏컷 겹침 해소). 세이브 변경 없음(v31).
+ServiceScene.js 전체 게임 로직을 TavernServiceScene에 독립 포팅. 조리 슬롯 2개, 레시피 퀵슬롯(4개+스킬 버튼 동일행), 재고 패널, Image→Sprite 전환(walk 애니메이션 실재생), 손님 AI/입퇴장 Tween, 인내심 감소, 서빙+골드, 셰프 스킬 5종, 영업 종료+ResultScene 전환, 이벤트 4종, 유랑 미력사 패시브+단골/평론가 로직. AD3 REVISE 3건(스킬 버튼 겹침/2행 초과/컨트롤 바 수용량) 수정 후 APPROVED. 세이브 변경 없음(v31).
 
-- QA: PASS (20/20 테스트, 13건 스크린샷 검증)
-- LOW: 이벤트 배너 텍스트 일부 잘림 (wordWrap 160px 의도적 트레이드오프)
-- 스펙: `.claude/specs/2026-04-29-kc-phase91-scope.md`
+- QA: PASS (38/38)
+- 스펙: `.claude/specs/2026-04-30-kc-phase95-scope.md`
 
-### Phase 90 -- 플레이테스트 이슈 20건 수정 (2026-04-29)
+### Phase 94 -- TavernServiceScene 테마 에셋 + HUD/VFX (2026-04-30)
 
-P0 4건(ShopScene 탭 depth, ResultScene 버튼 차단, 시즌 패스 undefined, ServiceScene 재료 0), P1 7건(에너지 HUD, 대화 지연, 아이콘 크기, 도구 이모지, 미션 안내, 판매 색상, 업그레이드 버튼), P2 9건(화살표 크기, 업적 아이콘, 텍스트 wrap, 카드 패딩, 노드 라벨, 재료 아이콘, 배경 stub, 시즌 패스 바로가기, 재클리어 문구) 수정. 세이브 변경 없음(v31).
+g1 바닥/벽 타일 v14 실 에셋 적용. 인내심 게이지 6테이블(100x8px, 3색 구간), 주문 말풍선, 골드 플로팅 VFX, 영업 HUD 바(타이머+골드). AD3 REVISE 1건(row0 게이지 벽 영역 침범) 수정 후 APPROVED. 세이브 변경 없음(v31).
 
-- QA: PASS (23/23 테스트, 15건 스크린샷 검증)
-- 스펙: `.claude/specs/2026-04-29-kc-phase90-scope.md`
+- QA: PASS (36/36)
+- 스펙: `.claude/specs/2026-04-30-kc-phase94-scope.md`
 
 이전 이력은 [CHANGELOG.md](CHANGELOG.md) 참조.
